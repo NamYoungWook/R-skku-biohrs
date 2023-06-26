@@ -16,7 +16,7 @@ which.max(x)                       ## order of max value
 max(x, y)                          ## max value among x & y
 length(x)                          
 
-
+##
 
 ## Slice
 x[2]                               ## 2 번째
