@@ -16,7 +16,7 @@ which.max(x)                       ## order of max value
 max(x, y)                          ## max value among x & y
 length(x)                          
 
-##
+## 
 
 ## Slice
 x[2]                               ## 2 번째
@@ -78,12 +78,11 @@ y
 
 
 ## function
-x <- c(1:10, 12, 13, NA, NA, 15, 17)      ## 결측치가 포함되어 있다면..
+x <-c(1:10, 12,13, NA,NA, 15,17)      ## 결측치가 포함되어 있다면..
 mean(x)                                           
-mean0 <- function(x){
-  mean(x, na.rm = T)
-}                                         ## mean함수의 na.rm 옵션을 TRUE로 바꿈. default는 F
-
+mean0<-function(x){
+  mean(x, na.rm=T)
+}
 mean0 <- function(x){mean(x, na.rm = T)}  ## 한줄에 쓸 수도 있다. 
 mean0(x)
 
@@ -97,7 +96,7 @@ twomean(4, 6)
 
 
 ## Apply: apply, sapply, lapply
-mat <- matrix(1:20, nrow = 4, byrow = T)   ## 4행 5열, byrow = T : 행부터 채운다. 
+mat <- matrix(1:20, nrow = 4, byrow =T)   ## 4행 5열, byrow = T : 행부터 채운다. 
 mat
 
 out <- NULL                                ## 빈 벡터, 여기에 하나씩 붙여넣는다.
@@ -106,8 +105,8 @@ for (i in 1:nrow(mat)){
 }
 out
 
-sapply(1:nrow(mat), function(x){mean(mat[x, ])})             ## Return vector
-lapply(1:nrow(mat), function(x){mean(mat[x, ])})             ## Return list type
+sapply(1:nrow(mat), function(y){mean(mat[y,])})          ## Return vector
+lapply(1:nrow(mat), function(x){mean(mat[x,])})             ## Return list type
 unlist(lapply(1:nrow(mat), function(x){mean(mat[x, ])}))     ## Same to sapply
 #parallel::mclapply(1:nrow(mat), function(x){mean(mat[x, ])}, mc.cores = 4)           ## Multicore
 
@@ -124,7 +123,7 @@ colMeans(mat)                                                ## 열별로 합
 x <- 1:6
 y <- 7:12
 
-
+sapply(list(x,y), max)
 
 
 ## With data
@@ -308,8 +307,8 @@ head(ex1.sort)
 
 ## Wide to long, long to wide format
 library(reshape2)
-long <- melt(ex1, id = c("EXMD_BZ_YYYY", "RN_INDI"), measure.vars = c("BP_SYS", "BP_DIA"), variable.name = "BP_type", value.name = "BP")
-long
+long <- melt(ex1, id = c("EXMD_BZ_YYYY", "RN_INDI"), measure.vars = c("BP_SYS","BP_DIA"), variable.name = "BP_type", value.name = "BP")
+long[-1,]
 
 library(reshape2)
 long <- melt(ex1, id = c("EXMD_BZ_YYYY", "RN_INDI"), measure.vars = c("BP_SYS", "BP_DIA"), variable.name = "BP_type", value.name = "BP")
@@ -328,5 +327,38 @@ head(ex1.measure)
 # all = T: Full, all.x = T: Left, all.y: Right, all = F: inner join
 ex1.merge <- merge(ex1.Q, ex1.measure, by = c("EXMD_BZ_YYYY", "RN_INDI", "HME_YYYYMM"), all = T)
 head(ex1.merge)
+
+a <- read.csv("https://raw.githubusercontent.com/jinseob2kim/R-skku-biohrs/main/data/smc_example1.csv")
+library(magrittr)
+a %>% head
+a %>% subset(Sex =='M')
+a %>% .$Sex
+a %>% .[["Sex"]]
+a %>% subset(Sex=='M') %>% head()
+a %>% 
+  subset(Sex =='M') %>% 
+  glm(DM ~ Age + Weight + BMI, data = ., family = binomial) %>% 
+  summary %>% 
+  .$coefficients
+
+out<-a %>% 
+  subset(Age>=50) %>% 
+  aggregate(.~Sex + Smoking, data=.,FUN = function(x){c(mean = mean(x), sd = sd(x))})
+
+
+library(dplyr)
+a %>% 
+  filter(Age>=50) %>% 
+  select(-STRESS_EXIST) %>% 
+  group_by(Sex, Smoking) %>% 
+  summarize_all(list(mean = mean, sd = sd))
+
+filter(a, Sex =='M')
+a %>% filter(.,Sex=='M')
+a %>% .[order(.$Age),]
+a %>% arrange(Age)
+
+
+a[, c("Sex","Age","Height")]
 
 
